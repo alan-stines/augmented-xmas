@@ -1,0 +1,236 @@
+:root {
+  color-scheme: dark;
+  --ink: #f6fbff;
+  --muted: #b8c7d0;
+  --panel: rgba(9, 18, 24, 0.78);
+  --line: rgba(255, 255, 255, 0.16);
+  --accent: #ffcf56;
+  --accent-2: #64d4ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #05080a;
+  color: var(--ink);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 15%, rgba(100, 212, 255, 0.1), transparent 34%),
+    #05080a;
+}
+
+#camera {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#output {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.start-panel,
+.controls {
+  position: absolute;
+  z-index: 4;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
+}
+
+.start-panel {
+  left: clamp(16px, 5vw, 72px);
+  bottom: clamp(16px, 6vh, 72px);
+  width: min(480px, calc(100vw - 32px));
+  padding: 28px;
+  border-radius: 8px;
+}
+
+.start-panel.is-hidden {
+  display: none;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 12px;
+  font-size: clamp(2.2rem, 8vw, 5.4rem);
+  line-height: 0.92;
+  letter-spacing: 0;
+}
+
+h2 {
+  margin-bottom: 0;
+  font-size: 1.05rem;
+}
+
+p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.55em;
+  padding: 0.08em 0.42em 0.16em;
+  border: 1px solid var(--line);
+  border-bottom-color: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  text-align: center;
+}
+
+#startButton {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #ffcf56, #f66f61);
+  color: #221306;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.status {
+  min-height: 1.5em;
+  margin: 14px 0 0;
+  font-size: 0.95rem;
+}
+
+.controls {
+  top: 16px;
+  right: 16px;
+  width: min(340px, calc(100vw - 32px));
+  padding: 16px;
+  border-radius: 8px;
+  transform: translateX(calc(100% + 24px));
+  transition: transform 180ms ease;
+}
+
+.controls.is-open {
+  transform: translateX(0);
+}
+
+.controls header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.icon-button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.controls label {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 38px;
+  color: #e6eef2;
+  font-size: 0.92rem;
+}
+
+.controls input[type="range"] {
+  width: 150px;
+  accent-color: var(--accent-2);
+}
+
+.controls input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.debug {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 3;
+  display: none;
+  min-width: 210px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #d7f6ff;
+  font: 12px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: pre;
+}
+
+.debug.is-open {
+  display: block;
+}
+
+@media (max-width: 700px) {
+  .start-panel {
+    padding: 20px;
+  }
+
+  .controls {
+    left: 16px;
+    right: 16px;
+    width: auto;
+  }
+
+  .controls label {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .controls input[type="range"] {
+    width: 100%;
+  }
+}

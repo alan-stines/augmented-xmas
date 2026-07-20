@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Augmented Xmas</title>
+    <meta
+      name="description"
+      content="Offline camera-to-projector winter scene compositor."
+    />
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="stage" aria-label="Augmented Christmas projector output">
+      <video id="camera" playsinline muted></video>
+      <canvas id="output"></canvas>
+
+      <section id="startPanel" class="start-panel" aria-live="polite">
+        <div>
+          <p class="eyebrow">Offline projector POC</p>
+          <h1>Augmented Xmas</h1>
+          <p>
+            Start the camera, then press <kbd>F</kbd> for fullscreen or
+            <kbd>C</kbd> to tune the effect controls.
+          </p>
+        </div>
+        <button id="startButton" type="button">Start camera</button>
+        <p id="status" class="status">Waiting for camera permission.</p>
+      </section>
+
+      <aside id="controls" class="controls" aria-label="Scene controls">
+        <header>
+          <div>
+            <p class="eyebrow">Live controls</p>
+            <h2>Winter compositor</h2>
+          </div>
+          <button id="hideControls" class="icon-button" type="button" title="Hide controls">
+            x
+          </button>
+        </header>
+
+        <label>
+          <span>Mirror camera</span>
+          <input id="mirrorInput" type="checkbox" checked />
+        </label>
+
+        <label>
+          <span>Snow amount</span>
+          <input id="snowInput" type="range" min="0" max="1" step="0.01" value="0.72" />
+        </label>
+
+        <label>
+          <span>Winter grade</span>
+          <input id="gradeInput" type="range" min="0" max="1" step="0.01" value="0.62" />
+        </label>
+
+        <label>
+          <span>Sparkle sensitivity</span>
+          <input id="sparkleInput" type="range" min="0" max="1" step="0.01" value="0.58" />
+        </label>
+
+        <label>
+          <span>Light garland</span>
+          <input id="lightsInput" type="range" min="0" max="1" step="0.01" value="0.8" />
+        </label>
+
+        <label>
+          <span>Show diagnostics</span>
+          <input id="debugInput" type="checkbox" />
+        </label>
+      </aside>
+
+      <div id="debug" class="debug" aria-hidden="true"></div>
+    </main>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>
