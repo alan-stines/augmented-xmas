@@ -40,7 +40,11 @@ export class Renderer {
     }
 
     for (const effect of this.effects) {
-      effect.render(ctx, width, height, deltaSeconds, state);
+      try {
+        effect.render(ctx, width, height, deltaSeconds, state);
+      } catch (error) {
+        console.error(`${effect.constructor.name} failed`, error);
+      }
     }
   }
 }
@@ -64,4 +68,3 @@ function drawCoverVideo(ctx, video, width, height, mirror) {
   }
   ctx.restore();
 }
-

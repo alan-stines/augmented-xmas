@@ -1,5 +1,5 @@
 export class FrostAndGradeEffect {
-  render(ctx, width, height, state) {
+  render(ctx, width, height, deltaSeconds, state) {
     const grade = state.config.grade;
     if (grade <= 0.01) return;
 
@@ -39,4 +39,3 @@ export class FrostAndGradeEffect {
     ctx.restore();
   }
 }
-
