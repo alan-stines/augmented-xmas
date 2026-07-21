@@ -20,13 +20,22 @@
           <p class="eyebrow">Offline projector POC</p>
           <h1>Augmented Xmas</h1>
           <p>
-            Start the camera, then press <kbd>F</kbd> for fullscreen or
-            <kbd>C</kbd> to tune the effect controls.
+            Start the camera, then use the on-screen controls or press
+            <kbd>F</kbd> for fullscreen and <kbd>C</kbd> for tuning.
           </p>
         </div>
         <button id="startButton" type="button">Start camera</button>
         <p id="status" class="status">Waiting for camera permission.</p>
       </section>
+
+      <nav class="quick-actions" aria-label="Projector quick actions">
+        <button id="controlsButton" class="round-button" type="button" aria-label="Show controls">
+          &#9881;
+        </button>
+        <button id="fullscreenButton" class="round-button" type="button" aria-label="Toggle fullscreen">
+          &#9974;
+        </button>
+      </nav>
 
       <aside id="controls" class="controls" aria-label="Scene controls">
         <header>
@@ -39,32 +48,55 @@
           </button>
         </header>
 
-        <label>
+        <div class="preset-grid" aria-label="Scene presets">
+          <button type="button" data-preset="clear">Clear</button>
+          <button type="button" data-preset="gentle">Gentle</button>
+          <button type="button" data-preset="festive">Festive</button>
+          <button type="button" data-preset="snowstorm">Snowstorm</button>
+        </div>
+
+        <label class="control-row">
           <span>Mirror camera</span>
           <input id="mirrorInput" type="checkbox" checked />
         </label>
 
-        <label>
+        <label class="control-row">
           <span>Snow amount</span>
           <input id="snowInput" type="range" min="0" max="1" step="0.01" value="0.72" />
         </label>
 
-        <label>
-          <span>Winter grade</span>
-          <input id="gradeInput" type="range" min="0" max="1" step="0.01" value="0.62" />
+        <label class="control-row">
+          <span>Night magic</span>
+          <input id="gradeInput" type="range" min="0" max="1" step="0.01" value="0.28" />
         </label>
 
-        <label>
+        <label class="control-row">
           <span>Sparkle sensitivity</span>
           <input id="sparkleInput" type="range" min="0" max="1" step="0.01" value="0.58" />
         </label>
 
-        <label>
+        <label class="control-row">
           <span>Light garland</span>
           <input id="lightsInput" type="range" min="0" max="1" step="0.01" value="0.8" />
         </label>
 
-        <label>
+        <label class="control-row">
+          <span>Face tracking</span>
+          <input id="faceTrackingInput" type="checkbox" checked />
+        </label>
+
+        <label class="control-row">
+          <span>Head effect</span>
+          <select id="faceAccessoryInput">
+            <option value="none">None</option>
+            <option value="santa" selected>Santa hat</option>
+            <option value="elf">Elf hat</option>
+            <option value="crown">Sparkle crown</option>
+            <option value="reindeer">Reindeer antlers</option>
+          </select>
+        </label>
+
+        <label class="control-row">
           <span>Show diagnostics</span>
           <input id="debugInput" type="checkbox" />
         </label>

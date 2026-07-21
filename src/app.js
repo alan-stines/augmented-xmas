@@ -1,7 +1,9 @@
 import { startCamera } from "./camera.js";
-import { config } from "./config.js";
+import { config, mediaPipeConfig, presets } from "./config.js";
 import { FrameAnalyzer } from "./frame-analyzer.js";
 import { Renderer } from "./renderer.js";
+import { SettingsStore } from "./settings-store.js";
+import { MediaPipeFaceVisionProvider } from "./vision/mediapipe-face-provider.js";
 
 const video = document.querySelector("#camera");
 const canvas = document.querySelector("#output");
@@ -9,6 +11,8 @@ const startPanel = document.querySelector("#startPanel");
 const startButton = document.querySelector("#startButton");
 const statusText = document.querySelector("#status");
 const controls = document.querySelector("#controls");
+const controlsButton = document.querySelector("#controlsButton");
+const fullscreenButton = document.querySelector("#fullscreenButton");
 const debug = document.querySelector("#debug");
 
 const inputs = {
@@ -17,14 +21,19 @@ const inputs = {
   grade: document.querySelector("#gradeInput"),
   sparkleSensitivity: document.querySelector("#sparkleInput"),
   lights: document.querySelector("#lightsInput"),
+  faceTracking: document.querySelector("#faceTrackingInput"),
+  faceAccessory: document.querySelector("#faceAccessoryInput"),
   debug: document.querySelector("#debugInput"),
 };
 
 const renderer = new Renderer(canvas, video);
 const analyzer = new FrameAnalyzer();
+const faceVision = new MediaPipeFaceVisionProvider(mediaPipeConfig);
+const settings = new SettingsStore(config, presets);
 const state = {
-  config,
+  config: settings.values,
   analysis: analyzer.snapshot(),
+  vision: faceVision.snapshot(),
   time: 0,
   fps: 0,
 };
@@ -52,7 +61,7 @@ startButton.addEventListener("click", async () => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "c") {
-    controls.classList.toggle("is-open");
+    toggleControls();
   }
 
   if (event.key.toLowerCase() === "f") {
@@ -68,7 +77,16 @@ document.querySelector("#hideControls").addEventListener("click", () => {
   controls.classList.remove("is-open");
 });
 
-function tick(now) {
+controlsButton.addEventListener("click", toggleControls);
+fullscreenButton.addEventListener("click", toggleFullscreen);
+
+document.querySelectorAll("[data-preset]").forEach((button) => {
+  button.addEventListener("click", () => {
+    settings.applyPreset(button.dataset.preset);
+  });
+});
+
+async function tick(now) {
   if (!running) return;
 
   const deltaSeconds = Math.min(0.05, (now - lastTime) / 1000);
@@ -76,35 +94,49 @@ function tick(now) {
   state.time += deltaSeconds;
   state.fps = Math.round(1 / Math.max(0.001, deltaSeconds));
   state.analysis = analyzer.analyze(video);
+  state.vision = await faceVision.analyze(video, now, settings.values.faceTracking);
   renderer.render(state, deltaSeconds);
   renderDebug();
   requestAnimationFrame(tick);
 }
 
 function bindControls() {
+  syncInputs();
+
   inputs.mirror.addEventListener("input", () => {
-    config.mirror = inputs.mirror.checked;
+    settings.set("mirror", inputs.mirror.checked);
   });
 
   for (const key of ["snowAmount", "grade", "sparkleSensitivity", "lights"]) {
     inputs[key].addEventListener("input", () => {
-      config[key] = Number(inputs[key].value);
+      settings.set(key, Number(inputs[key].value));
     });
   }
 
-  inputs.debug.addEventListener("input", () => {
-    config.debug = inputs.debug.checked;
-    debug.classList.toggle("is-open", config.debug);
+  inputs.faceTracking.addEventListener("input", () => {
+    settings.set("faceTracking", inputs.faceTracking.checked);
   });
+
+  inputs.faceAccessory.addEventListener("input", () => {
+    settings.set("faceAccessory", inputs.faceAccessory.value);
+  });
+
+  inputs.debug.addEventListener("input", () => {
+    settings.set("debug", inputs.debug.checked);
+  });
+
+  settings.addEventListener("settingschange", syncInputs);
 }
 
 function renderDebug() {
-  if (!config.debug) return;
+  if (!settings.values.debug) return;
   debug.textContent = [
     `fps: ${state.fps}`,
     `brightness: ${state.analysis.brightness.toFixed(2)}`,
     `motion: ${state.analysis.motionLevel.toFixed(2)}`,
     `motion points: ${state.analysis.motionPoints.length}`,
+    `faces: ${state.vision.faces.length}`,
+    `face model: ${state.vision.status}`,
     `canvas: ${canvas.width}x${canvas.height}`,
   ].join("\n");
 }
@@ -138,7 +170,22 @@ async function toggleFullscreen() {
   }
 }
 
+function toggleControls() {
+  controls.classList.toggle("is-open");
+}
+
+function syncInputs() {
+  inputs.mirror.checked = settings.values.mirror;
+  inputs.snowAmount.value = settings.values.snowAmount;
+  inputs.grade.value = settings.values.grade;
+  inputs.sparkleSensitivity.value = settings.values.sparkleSensitivity;
+  inputs.lights.value = settings.values.lights;
+  inputs.faceTracking.checked = settings.values.faceTracking;
+  inputs.faceAccessory.value = settings.values.faceAccessory;
+  inputs.debug.checked = settings.values.debug;
+  debug.classList.toggle("is-open", settings.values.debug);
+}
+
 window.addEventListener("resize", () => {
   if (!running) drawIdleScene();
 });
-

@@ -1,5 +1,6 @@
 import { FrostAndGradeEffect } from "./effects/frost.js";
 import { GarlandLightsEffect } from "./effects/lights.js";
+import { FaceMagicEffect } from "./effects/face-magic.js";
 import { SnowfallEffect } from "./effects/snow.js";
 import { MotionSparkleEffect } from "./effects/sparkles.js";
 
@@ -13,6 +14,7 @@ export class Renderer {
       new GarlandLightsEffect(),
       new MotionSparkleEffect(),
       new SnowfallEffect(),
+      new FaceMagicEffect(),
     ];
   }
 
@@ -33,10 +35,11 @@ export class Renderer {
     ctx.clearRect(0, 0, width, height);
 
     if (this.video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-      drawCoverVideo(ctx, this.video, width, height, state.config.mirror);
+      state.frame = drawCoverVideo(ctx, this.video, width, height, state.config.mirror);
     } else {
       ctx.fillStyle = "#05080a";
       ctx.fillRect(0, 0, width, height);
+      state.frame = null;
     }
 
     for (const effect of this.effects) {
@@ -57,6 +60,15 @@ function drawCoverVideo(ctx, video, width, height, mirror) {
   const drawHeight = videoHeight * scale;
   const x = (width - drawWidth) / 2;
   const y = (height - drawHeight) / 2;
+  const frame = {
+    canvasWidth: width,
+    canvasHeight: height,
+    x,
+    y,
+    width: drawWidth,
+    height: drawHeight,
+    mirror,
+  };
 
   ctx.save();
   if (mirror) {
@@ -67,4 +79,5 @@ function drawCoverVideo(ctx, video, width, height, mirror) {
     ctx.drawImage(video, x, y, drawWidth, drawHeight);
   }
   ctx.restore();
+  return frame;
 }
