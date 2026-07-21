@@ -1,4 +1,5 @@
 export const config = {
+  cameraFacing: "user",
   mirror: true,
   snowAmount: 0.72,
   grade: 0.28,

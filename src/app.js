@@ -16,6 +16,7 @@ const fullscreenButton = document.querySelector("#fullscreenButton");
 const debug = document.querySelector("#debug");
 
 const inputs = {
+  cameraFacing: document.querySelector("#cameraFacingInput"),
   mirror: document.querySelector("#mirrorInput"),
   snowAmount: document.querySelector("#snowInput"),
   grade: document.querySelector("#gradeInput"),
@@ -47,7 +48,7 @@ drawIdleScene();
 startButton.addEventListener("click", async () => {
   try {
     statusText.textContent = "Opening camera...";
-    await startCamera(video);
+    await startCamera(video, settings.values.cameraFacing);
     startPanel.classList.add("is-hidden");
     running = true;
     lastTime = performance.now();
@@ -102,6 +103,21 @@ async function tick(now) {
 
 function bindControls() {
   syncInputs();
+
+  inputs.cameraFacing.addEventListener("input", async () => {
+    settings.set("cameraFacing", inputs.cameraFacing.value);
+    settings.set("mirror", inputs.cameraFacing.value === "user");
+    if (!running) return;
+
+    try {
+      statusText.textContent = "Switching camera...";
+      await startCamera(video, settings.values.cameraFacing);
+      statusText.textContent = "";
+    } catch (error) {
+      statusText.textContent = "Camera switch failed. Try the other camera option.";
+      console.error(error);
+    }
+  });
 
   inputs.mirror.addEventListener("input", () => {
     settings.set("mirror", inputs.mirror.checked);
@@ -175,6 +191,7 @@ function toggleControls() {
 }
 
 function syncInputs() {
+  inputs.cameraFacing.value = settings.values.cameraFacing;
   inputs.mirror.checked = settings.values.mirror;
   inputs.snowAmount.value = settings.values.snowAmount;
   inputs.grade.value = settings.values.grade;
