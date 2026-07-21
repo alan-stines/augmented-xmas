@@ -84,44 +84,93 @@ function drawHalo(ctx, x, y, size, pulse) {
 }
 
 function drawSparkleCrown(ctx, x, y, size, time) {
-  const width = Math.max(72, size * 0.95);
-  const baseY = y + size * 0.02;
-  const points = 5;
+  const width = Math.max(88, size * 1.08);
+  const baseHeight = Math.max(16, size * 0.13);
+  const baseY = y + size * 0.04;
+  const topY = baseY - size * 0.42;
+  const left = x - width / 2;
+  const right = x + width / 2;
+  const shimmer = 0.72 + Math.sin(time * 3.5) * 0.16;
+
   ctx.save();
-  ctx.globalCompositeOperation = "lighter";
-  ctx.shadowColor = "rgba(255, 220, 102, 0.8)";
-  ctx.shadowBlur = Math.max(10, size * 0.08);
-  ctx.strokeStyle = "rgba(255, 223, 79, 0.98)";
-  ctx.lineWidth = Math.max(4, size * 0.034);
+  ctx.globalCompositeOperation = "source-over";
+  ctx.shadowColor = "rgba(104, 221, 255, 0.72)";
+  ctx.shadowBlur = Math.max(12, size * 0.09);
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
+
+  const crownGradient = ctx.createLinearGradient(x, topY, x, baseY + baseHeight);
+  crownGradient.addColorStop(0, `rgba(230, 252, 255, ${0.9 * shimmer})`);
+  crownGradient.addColorStop(0.48, "rgba(109, 221, 255, 0.68)");
+  crownGradient.addColorStop(1, "rgba(20, 112, 170, 0.72)");
+  ctx.fillStyle = crownGradient;
+
   ctx.beginPath();
+  ctx.moveTo(left, baseY);
+  ctx.lineTo(left + width * 0.14, baseY - size * 0.22);
+  ctx.lineTo(left + width * 0.28, baseY - size * 0.1);
+  ctx.lineTo(x, topY);
+  ctx.lineTo(right - width * 0.28, baseY - size * 0.1);
+  ctx.lineTo(right - width * 0.14, baseY - size * 0.22);
+  ctx.lineTo(right, baseY);
+  ctx.lineTo(right - width * 0.04, baseY + baseHeight);
+  ctx.lineTo(left + width * 0.04, baseY + baseHeight);
+  ctx.closePath();
+  ctx.fill();
 
-  for (let i = 0; i < points; i += 1) {
-    const t = i / (points - 1);
-    const px = x - width / 2 + t * width;
-    const py = baseY + Math.sin(time * 2.6 + i) * size * 0.025;
-    const peakY = py - size * (i % 2 === 0 ? 0.3 : 0.18);
-    if (i === 0) ctx.moveTo(px, py);
-    ctx.lineTo(px + width / (points * 2), peakY);
-    ctx.lineTo(px + width / points, py);
-  }
-
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = "rgba(244, 253, 255, 0.96)";
+  ctx.lineWidth = Math.max(2, size * 0.02);
   ctx.stroke();
 
-  for (let i = 0; i < points; i += 1) {
-    const t = i / (points - 1);
-    const px = x - width / 2 + t * width;
-    const py = baseY - size * (i % 2 === 0 ? 0.3 : 0.18);
-    drawStar(ctx, px, py, Math.max(5, size * 0.055));
-  }
+  ctx.globalCompositeOperation = "screen";
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.54)";
+  ctx.lineWidth = Math.max(1, size * 0.01);
+  drawFacet(ctx, left + width * 0.12, baseY + baseHeight * 0.8, left + width * 0.28, baseY - size * 0.1, x, baseY + baseHeight);
+  drawFacet(ctx, x, baseY + baseHeight, x, topY, right - width * 0.28, baseY - size * 0.1);
+  drawFacet(ctx, right - width * 0.12, baseY + baseHeight * 0.8, right - width * 0.28, baseY - size * 0.1, x, baseY + baseHeight);
 
   ctx.globalCompositeOperation = "source-over";
-  ctx.shadowBlur = 0;
-  ctx.fillStyle = "rgba(255, 244, 188, 0.9)";
-  roundedRect(ctx, x - width * 0.48, baseY - size * 0.02, width * 0.96, Math.max(7, size * 0.055), Math.max(4, size * 0.025));
+  drawIceGem(ctx, x, topY, Math.max(8, size * 0.07), time);
+  drawIceGem(ctx, left + width * 0.14, baseY - size * 0.22, Math.max(6, size * 0.052), time + 1);
+  drawIceGem(ctx, right - width * 0.14, baseY - size * 0.22, Math.max(6, size * 0.052), time + 2);
+
+  ctx.fillStyle = "rgba(224, 248, 255, 0.82)";
+  roundedRect(ctx, left + width * 0.08, baseY + baseHeight * 0.35, width * 0.84, baseHeight * 0.38, baseHeight * 0.19);
   ctx.fill();
   ctx.restore();
+}
+
+function drawFacet(ctx, ax, ay, bx, by, cx, cy) {
+  ctx.beginPath();
+  ctx.moveTo(ax, ay);
+  ctx.lineTo(bx, by);
+  ctx.lineTo(cx, cy);
+  ctx.stroke();
+}
+
+function drawIceGem(ctx, x, y, radius, time) {
+  const pulse = 0.7 + Math.sin(time * 4.8) * 0.2;
+  const gradient = ctx.createRadialGradient(x - radius * 0.25, y - radius * 0.3, 0, x, y, radius * 2.4);
+  gradient.addColorStop(0, `rgba(255, 255, 255, ${0.95 * pulse})`);
+  gradient.addColorStop(0.35, "rgba(156, 237, 255, 0.82)");
+  gradient.addColorStop(1, "rgba(70, 190, 255, 0)");
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.arc(x, y, radius * 2.4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.fillStyle = "rgba(238, 253, 255, 0.92)";
+  ctx.beginPath();
+  ctx.moveTo(x, y - radius);
+  ctx.lineTo(x + radius * 0.85, y);
+  ctx.lineTo(x, y + radius);
+  ctx.lineTo(x - radius * 0.85, y);
+  ctx.closePath();
+  ctx.fill();
 }
 
 function drawReindeerAntlers(ctx, x, y, faceWidth, size, time, face, frame) {
