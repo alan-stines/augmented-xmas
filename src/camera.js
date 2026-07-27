@@ -1,9 +1,15 @@
-export async function startCamera(video, facingMode = "user") {
+const resolutions = {
+  hd: { width: 1280, height: 720 },
+  fullHd: { width: 1920, height: 1080 },
+};
+
+export async function startCamera(video, facingMode = "user", resolution = "hd") {
+  const size = resolutions[resolution] || resolutions.hd;
   const constraints = {
     audio: false,
     video: {
-      width: { ideal: 1920 },
-      height: { ideal: 1080 },
+      width: { ideal: size.width },
+      height: { ideal: size.height },
       frameRate: { ideal: 30, max: 30 },
       facingMode: { ideal: facingMode },
     },

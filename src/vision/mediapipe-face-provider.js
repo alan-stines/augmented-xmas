@@ -67,10 +67,12 @@ export class MediaPipeFaceVisionProvider {
 
     try {
       const result = this.faceLandmarker.detectForVideo(video, now);
-      this.faces = (result.faceLandmarks || []).map((landmarks) => ({
-        landmarks,
-        box: getLandmarkBox(landmarks),
-      }));
+      this.faces = (result.faceLandmarks || [])
+        .map((landmarks) => ({
+          landmarks,
+          box: getLandmarkBox(landmarks),
+        }))
+        .sort((a, b) => b.box.area - a.box.area);
     } catch (error) {
       this.status = "error";
       this.error = error instanceof Error ? error.message : String(error);
@@ -121,6 +123,7 @@ function getLandmarkBox(landmarks) {
     y: minY,
     width: Math.max(0, maxX - minX),
     height: Math.max(0, maxY - minY),
+    area: Math.max(0, maxX - minX) * Math.max(0, maxY - minY),
     centerX: minX + (maxX - minX) / 2,
     centerY: minY + (maxY - minY) / 2,
   };

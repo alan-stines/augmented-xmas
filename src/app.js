@@ -17,6 +17,7 @@ const debug = document.querySelector("#debug");
 
 const inputs = {
   cameraFacing: document.querySelector("#cameraFacingInput"),
+  cameraResolution: document.querySelector("#cameraResolutionInput"),
   mirror: document.querySelector("#mirrorInput"),
   snowAmount: document.querySelector("#snowInput"),
   grade: document.querySelector("#gradeInput"),
@@ -48,7 +49,7 @@ drawIdleScene();
 startButton.addEventListener("click", async () => {
   try {
     statusText.textContent = "Opening camera...";
-    await startCamera(video, settings.values.cameraFacing);
+    await startCamera(video, settings.values.cameraFacing, settings.values.cameraResolution);
     startPanel.classList.add("is-hidden");
     running = true;
     lastTime = performance.now();
@@ -111,10 +112,24 @@ function bindControls() {
 
     try {
       statusText.textContent = "Switching camera...";
-      await startCamera(video, settings.values.cameraFacing);
+      await restartCamera();
       statusText.textContent = "";
     } catch (error) {
       statusText.textContent = "Camera switch failed. Try the other camera option.";
+      console.error(error);
+    }
+  });
+
+  inputs.cameraResolution.addEventListener("input", async () => {
+    settings.set("cameraResolution", inputs.cameraResolution.value);
+    if (!running) return;
+
+    try {
+      statusText.textContent = "Changing camera detail...";
+      await restartCamera();
+      statusText.textContent = "";
+    } catch (error) {
+      statusText.textContent = "Camera detail change failed.";
       console.error(error);
     }
   });
@@ -187,12 +202,17 @@ async function toggleFullscreen() {
   }
 }
 
+function restartCamera() {
+  return startCamera(video, settings.values.cameraFacing, settings.values.cameraResolution);
+}
+
 function toggleControls() {
   controls.classList.toggle("is-open");
 }
 
 function syncInputs() {
   inputs.cameraFacing.value = settings.values.cameraFacing;
+  inputs.cameraResolution.value = settings.values.cameraResolution;
   inputs.mirror.checked = settings.values.mirror;
   inputs.snowAmount.value = settings.values.snowAmount;
   inputs.grade.value = settings.values.grade;

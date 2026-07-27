@@ -1,5 +1,6 @@
 export const config = {
   cameraFacing: "user",
+  cameraResolution: "hd",
   mirror: true,
   snowAmount: 0.72,
   grade: 0.28,
@@ -44,9 +45,9 @@ export const mediaPipeConfig = {
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm",
   modelPath:
     "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task",
-  maxFaces: 6,
-  minFaceDetectionConfidence: 0.25,
-  minFacePresenceConfidence: 0.25,
-  minTrackingConfidence: 0.25,
-  minDetectionIntervalMs: 65,
+  maxFaces: 4,
+  minFaceDetectionConfidence: 0.35,
+  minFacePresenceConfidence: 0.35,
+  minTrackingConfidence: 0.4,
+  minDetectionIntervalMs: 90,
 };
