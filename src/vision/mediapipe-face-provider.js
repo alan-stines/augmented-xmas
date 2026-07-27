@@ -19,7 +19,7 @@ export class MediaPipeFaceVisionProvider {
       this.faceLandmarker = await createFaceLandmarker(
         FaceLandmarker,
         vision,
-        this.options.modelPath,
+        this.options,
         "GPU",
       );
       this.status = "ready";
@@ -30,7 +30,7 @@ export class MediaPipeFaceVisionProvider {
         this.faceLandmarker = await createFaceLandmarker(
           FaceLandmarker,
           vision,
-          this.options.modelPath,
+          this.options,
           "CPU",
         );
         this.status = "ready";
@@ -57,7 +57,7 @@ export class MediaPipeFaceVisionProvider {
       this.status !== "ready" ||
       video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
       video.currentTime === this.lastVideoTime ||
-      now - this.lastRun < 85
+      now - this.lastRun < this.options.minDetectionIntervalMs
     ) {
       return this.snapshot();
     }
@@ -89,17 +89,17 @@ export class MediaPipeFaceVisionProvider {
   }
 }
 
-function createFaceLandmarker(FaceLandmarker, vision, modelPath, delegate) {
+function createFaceLandmarker(FaceLandmarker, vision, options, delegate) {
   return FaceLandmarker.createFromOptions(vision, {
     baseOptions: {
-      modelAssetPath: modelPath,
+      modelAssetPath: options.modelPath,
       delegate,
     },
     runningMode: "VIDEO",
-    numFaces: 2,
-    minFaceDetectionConfidence: 0.45,
-    minFacePresenceConfidence: 0.45,
-    minTrackingConfidence: 0.45,
+    numFaces: options.maxFaces,
+    minFaceDetectionConfidence: options.minFaceDetectionConfidence,
+    minFacePresenceConfidence: options.minFacePresenceConfidence,
+    minTrackingConfidence: options.minTrackingConfidence,
   });
 }
 

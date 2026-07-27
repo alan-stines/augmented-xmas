@@ -151,8 +151,9 @@ function renderDebug() {
     `brightness: ${state.analysis.brightness.toFixed(2)}`,
     `motion: ${state.analysis.motionLevel.toFixed(2)}`,
     `motion points: ${state.analysis.motionPoints.length}`,
-    `faces: ${state.vision.faces.length}`,
+    `faces: ${state.vision.faces.length}/${mediaPipeConfig.maxFaces}`,
     `face model: ${state.vision.status}`,
+    `video: ${video.videoWidth || 0}x${video.videoHeight || 0}`,
     `canvas: ${canvas.width}x${canvas.height}`,
   ].join("\n");
 }

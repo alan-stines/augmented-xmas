@@ -44,4 +44,9 @@ export const mediaPipeConfig = {
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm",
   modelPath:
     "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task",
+  maxFaces: 6,
+  minFaceDetectionConfidence: 0.25,
+  minFacePresenceConfidence: 0.25,
+  minTrackingConfidence: 0.25,
+  minDetectionIntervalMs: 65,
 };

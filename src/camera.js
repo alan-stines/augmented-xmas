@@ -2,8 +2,8 @@ export async function startCamera(video, facingMode = "user") {
   const constraints = {
     audio: false,
     video: {
-      width: { ideal: 1280 },
-      height: { ideal: 720 },
+      width: { ideal: 1920 },
+      height: { ideal: 1080 },
       frameRate: { ideal: 30, max: 30 },
       facingMode: { ideal: facingMode },
     },
