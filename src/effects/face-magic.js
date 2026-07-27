@@ -1,10 +1,16 @@
 export class FaceMagicEffect {
+  constructor() {
+    this.assignments = [];
+  }
+
   render(ctx, width, height, deltaSeconds, state) {
     if (!state.config.faceTracking || !state.frame || !state.vision?.faces.length) {
+      this.assignments = [];
       return;
     }
 
     ctx.save();
+    const activeAssignments = new Set();
 
     for (const face of state.vision.faces) {
       const box = mapBox(face.box, state.frame);
@@ -12,13 +18,20 @@ export class FaceMagicEffect {
       const faceSize = Math.max(box.width, box.height);
       const anchorY = box.y + faceSize * 0.05;
       const pulse = 0.72 + Math.sin(state.time * 4.2) * 0.18;
+      const accessory = this.resolveAccessory(
+        state.config.faceAccessory,
+        center,
+        faceSize,
+        activeAssignments,
+      );
+      activeAssignments.add(accessory.assignmentId);
 
       ctx.globalCompositeOperation = "lighter";
       drawHalo(ctx, center.x, anchorY + faceSize * 0.12, faceSize, pulse);
       ctx.globalCompositeOperation = "source-over";
       drawAccessory(
         ctx,
-        state.config.faceAccessory,
+        accessory.name,
         center.x,
         anchorY,
         box.width,
@@ -30,8 +43,52 @@ export class FaceMagicEffect {
       drawFaceBox(ctx, box);
     }
 
+    this.assignments = this.assignments.filter((assignment) =>
+      activeAssignments.has(assignment.id),
+    );
     ctx.restore();
   }
+
+  resolveAccessory(selectedAccessory, center, faceSize, activeAssignments) {
+    if (selectedAccessory !== "random") {
+      return { name: selectedAccessory, assignmentId: null };
+    }
+
+    const matchDistance = Math.max(64, faceSize * 0.8);
+    let bestAssignment = null;
+    let bestDistance = Infinity;
+
+    for (const assignment of this.assignments) {
+      if (activeAssignments.has(assignment.id)) continue;
+      const distance = Math.hypot(center.x - assignment.x, center.y - assignment.y);
+      if (distance < matchDistance && distance < bestDistance) {
+        bestAssignment = assignment;
+        bestDistance = distance;
+      }
+    }
+
+    if (!bestAssignment) {
+      bestAssignment = {
+        id:
+          globalThis.crypto?.randomUUID?.() ||
+          String(performance.now() + Math.random()),
+        x: center.x,
+        y: center.y,
+        name: randomAccessoryName(),
+      };
+      this.assignments.push(bestAssignment);
+    }
+
+    bestAssignment.x = center.x;
+    bestAssignment.y = center.y;
+    return { name: bestAssignment.name, assignmentId: bestAssignment.id };
+  }
+}
+
+const randomAccessories = ["santa", "elf", "crown", "reindeer"];
+
+function randomAccessoryName() {
+  return randomAccessories[Math.floor(Math.random() * randomAccessories.length)];
 }
 
 function drawAccessory(ctx, accessory, x, y, width, size, time, face, frame) {

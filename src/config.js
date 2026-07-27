@@ -7,7 +7,7 @@ export const config = {
   sparkleSensitivity: 0.38,
   lights: 0.52,
   faceTracking: true,
-  faceAccessory: "santa",
+  faceAccessory: "random",
   debug: false,
 };
 
