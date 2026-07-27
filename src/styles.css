@@ -71,11 +71,20 @@ button {
 }
 
 .start-panel {
-  left: clamp(16px, 5vw, 72px);
-  bottom: clamp(16px, 6vh, 72px);
-  width: min(480px, calc(100vw - 32px));
-  padding: 28px;
-  border-radius: 8px;
+  inset: 0;
+  width: 100%;
+  min-height: 100dvh;
+  padding: clamp(28px, 6vw, 72px);
+  border: 0;
+  border-radius: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: clamp(18px, 3vw, 28px);
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(126, 225, 255, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(9, 18, 24, 0.92), rgba(3, 7, 10, 0.96));
 }
 
 .start-panel.is-hidden {
@@ -89,6 +98,20 @@ button {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.mga-logo {
+  display: block;
+  width: min(72vw, 520px);
+  height: auto;
+  object-fit: contain;
+}
+
+.start-copy {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  max-width: 720px;
 }
 
 h1,
@@ -114,6 +137,20 @@ p {
   line-height: 1.5;
 }
 
+.credit {
+  margin-bottom: 0;
+  max-width: 42rem;
+  color: #edf6fa;
+  font-size: clamp(1rem, 2.5vw, 1.18rem);
+  font-weight: 650;
+}
+
+.start-hint {
+  margin: -4px 0 0;
+  color: #c7d8df;
+  font-size: 0.94rem;
+}
+
 kbd {
   display: inline-block;
   min-width: 1.55em;
@@ -127,15 +164,15 @@ kbd {
 }
 
 #startButton {
-  width: 100%;
-  min-height: 48px;
-  margin-top: 10px;
+  width: min(100%, 360px);
+  min-height: 54px;
   border: 0;
   border-radius: 7px;
-  background: linear-gradient(90deg, #ffcf56, #f66f61);
+  background: linear-gradient(90deg, #ffcf56, #7ee1ff);
   color: #221306;
   font-weight: 800;
   cursor: pointer;
+  font-size: 1.05rem;
 }
 
 .quick-actions {
@@ -289,11 +326,38 @@ kbd {
   }
 
   .start-panel {
-    left: 12px;
-    right: 12px;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    width: auto;
-    padding: 20px;
+    inset: 0;
+    width: 100%;
+    min-height: 100dvh;
+    max-height: none;
+    overflow: auto;
+    padding:
+      max(24px, env(safe-area-inset-top))
+      18px
+      max(24px, env(safe-area-inset-bottom));
+    gap: 16px;
+    align-content: center;
+  }
+
+  .mga-logo {
+    width: min(92vw, 380px);
+  }
+
+  h1 {
+    font-size: clamp(2.1rem, 13vw, 3.6rem);
+  }
+
+  .credit {
+    font-size: 1rem;
+  }
+
+  .start-hint {
+    font-size: 0.88rem;
+  }
+
+  #startButton {
+    width: 100%;
+    max-width: 380px;
   }
 
   .controls {
